@@ -1,9 +1,652 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Harmonova</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HarmoNova — Song Guide Harmonium</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a0a2e; color: #fff; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+
+  .header { text-align: center; padding: 20px; background: linear-gradient(135deg, #2d1b69, #11998e); }
+  .header h1 { font-size: 2em; letter-spacing: 3px; color: #ffd700; }
+  .header p { color: #aaa; font-size: 0.9em; }
+
+  /* SEARCH BOX */
+  .search-section { display: flex; gap: 10px; padding: 20px; justify-content: center; flex-wrap: wrap; }
+  .search-section input {
+    padding: 12px 20px; border-radius: 25px; border: 2px solid #11998e;
+    background: #2d1b69; color: white; font-size: 1em; width: 320px; outline: none;
+  }
+  .search-section input::placeholder { color: #888; }
+  .btn {
+    padding: 12px 24px; border-radius: 25px; border: none; cursor: pointer;
+    font-size: 1em; font-weight: bold; transition: all 0.2s;
+  }
+  .btn-search { background: linear-gradient(135deg, #11998e, #38ef7d); color: #1a0a2e; }
+  .btn-search:hover { transform: scale(1.05); }
+  .btn-search:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* STATUS */
+  .status { text-align: center; padding: 8px; color: #ffd700; font-size: 0.9em; min-height: 30px; }
+
+  /* NOTATION STRIP */
+  .notation-container {
+    margin: 10px 20px; background: #0d0628; border-radius: 15px;
+    border: 2px solid #11998e; overflow: hidden; position: relative;
+  }
+  .notation-label {
+    background: #11998e; padding: 6px 15px; font-size: 0.8em;
+    font-weight: bold; letter-spacing: 2px; color: #0d0628;
+  }
+  #notation-strip {
+    display: flex; align-items: center; gap: 0;
+    padding: 15px 0; overflow: hidden; position: relative; height: 90px;
+  }
+  .note-block {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 80px; height: 60px; border-radius: 10px; margin: 0 4px;
+    font-weight: bold; font-size: 1.1em; transition: all 0.15s;
+    border: 2px solid transparent; flex-shrink: 0;
+    background: #1e0f4e; color: #888;
+  }
+  .note-block .sargam { font-size: 1.3em; }
+  .note-block .key-hint { font-size: 0.7em; color: #666; margin-top: 2px; }
+  .note-block.upcoming { background: #2d1b69; color: #aaa; border-color: #444; }
+  .note-block.active {
+    background: linear-gradient(135deg, #ffd700, #ff6b35) !important;
+    color: #1a0a2e !important; border-color: #ffd700 !important;
+    transform: scale(1.15); box-shadow: 0 0 25px #ffd700;
+  }
+  .note-block.active .key-hint { color: #1a0a2e !important; }
+  .note-block.hit { background: linear-gradient(135deg, #38ef7d, #11998e) !important; color: #000 !important; }
+  .note-block.missed { background: #ff4444 !important; color: white !important; }
+
+  /* HIT ZONE INDICATOR */
+  .hit-zone-marker {
+    position: absolute; left: 92px; top: 0; bottom: 0; width: 3px;
+    background: rgba(255, 215, 0, 0.4); z-index: 5;
+  }
+
+  /* CONTROLS */
+  .controls { display: flex; gap: 15px; padding: 10px 20px; justify-content: center; flex-wrap: wrap; align-items: center; }
+  .btn-control { background: #2d1b69; color: white; border: 1px solid #555; padding: 8px 16px; border-radius: 15px; }
+  .btn-play { background: linear-gradient(135deg, #11998e, #38ef7d); color: #000; }
+  .btn-stop { background: linear-gradient(135deg, #ff6b35, #ff4444); color: white; }
+  .speed-label { color: #aaa; font-size: 0.9em; }
+  input[type=range] { accent-color: #11998e; }
+
+  /* SCORE */
+  .score-bar {
+    display: flex; justify-content: center; gap: 30px; padding: 10px;
+    background: #0d0628; border-radius: 10px; margin: 10px 20px;
+    font-size: 1.1em;
+  }
+  .score-item { text-align: center; }
+  .score-item .val { font-size: 1.5em; font-weight: bold; color: #ffd700; }
+  .score-item .lbl { font-size: 0.7em; color: #888; }
+
+  /* HARMONIUM KEYBOARD */
+  .keyboard-section { margin: 10px 20px; }
+  .keyboard-label {
+    background: #2d1b69; padding: 6px 15px; border-radius: 10px 10px 0 0;
+    font-size: 0.8em; font-weight: bold; letter-spacing: 2px; color: #aaa;
+    display: inline-block;
+  }
+  .keyboard-wrapper { background: #1e0f4e; border-radius: 0 10px 10px 10px; padding: 15px; overflow-x: auto; }
+  #keyboard { display: flex; position: relative; height: 120px; user-select: none; min-width: 600px; }
+  .key {
+    position: relative; display: flex; align-items: flex-end; justify-content: center;
+    padding-bottom: 8px; cursor: pointer; border-radius: 0 0 6px 6px;
+    font-size: 0.7em; font-weight: bold; transition: all 0.1s; border: 1px solid #333;
+  }
+  .key.white {
+    width: 42px; height: 120px; background: linear-gradient(to bottom, #f0e6d3, #e8dcc8);
+    color: #333; z-index: 1; margin: 0 1px;
+  }
+  .key.black {
+    width: 28px; height: 75px; background: linear-gradient(to bottom, #2a2a2a, #111);
+    color: #ccc; z-index: 2; position: absolute; margin-left: -14px;
+  }
+  .key.white:active, .key.white.pressed { background: linear-gradient(to bottom, #ffd700, #ffaa00) !important; }
+  .key.black:active, .key.black.pressed { background: linear-gradient(to bottom, #665500, #443300) !important; }
+  .key.highlighted { box-shadow: 0 0 15px #ffd700; border: 2px solid #ffd700 !important; }
+
+  /* LOAD BUTTON */
+  .load-section { text-align: center; padding: 20px; }
+  .btn-load { background: linear-gradient(135deg, #2d1b69, #11998e); color: white; font-size: 1.1em; padding: 15px 40px; border-radius: 30px; border: 2px solid #11998e; }
+
+  .footer { text-align: center; padding: 15px; color: #444; font-size: 0.8em; }
+</style>
 </head>
 <body>
-  <h1>Harmonova Live 🚀</h1>
+
+<div class="header">
+  <h1>🎵 HarmoNova</h1>
+  <p>Song Guide Harmonium — Harmonium bajao, songs seekho</p>
+</div>
+
+<!-- LOAD SECTION -->
+<div class="load-section" id="load-section">
+  <p style="color:#aaa; margin-bottom:15px;">Pehle harmonium load karo:</p>
+  <button class="btn btn-load" onclick="loadHarmonium()">🎹 Harmonium Load Karo</button>
+</div>
+
+<!-- MAIN APP (hidden until loaded) -->
+<div id="main-app" style="display:none;">
+
+  <!-- API KEY INPUT -->
+  <div style="text-align:center; padding: 10px 20px;">
+    <input type="password" id="api-key-input" placeholder="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" 
+      style="padding:10px 20px; border-radius:20px; border:2px solid #555; background:#1e0f4e; color:white; width:350px; outline:none; font-size:0.9em;">
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-section">
+    <input type="text" id="song-input" placeholder="🎵 Song ka naam likhao (e.g. Tum Hi Ho, Kal Ho Na Ho...)" />
+    <button class="btn btn-search" id="search-btn" onclick="searchSong()">🔍 Dhun Dhundo</button>
+  </div>
+  <div class="status" id="status-text">Song ka naam likhao aur dhundhao ↑</div>
+
+  <!-- NOTATION STRIP -->
+  <div class="notation-container">
+    <div class="notation-label">🎼 NOTATION STRIP — YEH KEY DABAAO</div>
+    <div style="position:relative;">
+      <div class="hit-zone-marker"></div>
+      <div id="notation-strip">
+        <div style="color:#444; padding: 20px 40px;">Song search karo — yahan notes dikhenge...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="btn btn-play btn-control" onclick="startGame()" id="play-btn" disabled>▶ Shuru Karo</button>
+    <button class="btn btn-stop btn-control" onclick="stopGame()" id="stop-btn" disabled>⏹ Roko</button>
+    <span class="speed-label">⚡ Speed:</span>
+    <input type="range" id="speed-slider" min="0.5" max="2" step="0.1" value="1" style="width:100px;">
+    <span id="speed-val">1x</span>
+    <button class="btn btn-control" onclick="toggleFreePlay()">🎹 Free Play</button>
+  </div>
+
+  <!-- SCORE -->
+  <div class="score-bar">
+    <div class="score-item"><div class="val" id="score-val">0</div><div class="lbl">SCORE</div></div>
+    <div class="score-item"><div class="val" id="hits-val">0</div><div class="lbl">HITS ✅</div></div>
+    <div class="score-item"><div class="val" id="misses-val">0</div><div class="lbl">MISS ❌</div></div>
+    <div class="score-item"><div class="val" id="combo-val">0</div><div class="lbl">COMBO 🔥</div></div>
+  </div>
+
+  <!-- KEYBOARD -->
+  <div class="keyboard-section">
+    <div class="keyboard-label">🎹 HARMONIUM</div>
+    <div class="keyboard-wrapper">
+      <div id="keyboard"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">Based on Web Harmonium by Rajaraman Iyer (MIT License) — Modified as HarmoNova</div>
+
+<script>
+// ============================================================
+// CONFIGURATION — APNI KEY YAHAN DAAL SAKTE HO YA INPUT BOX MEIN
+// ============================================================
+const CLAUDE_API_KEY = ''; // Ya input box mein daalein
+
+// ============================================================
+// HARMONIUM ENGINE (Rajaraman Iyer ke code pe based)
+// ============================================================
+let audioCtx = null;
+let harmoniumBuffer = null;
+let activeNodes = {};
+let reverbNode = null;
+let masterGain = null;
+let rootNote = 60; // Middle C
+
+const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+
+// Key to MIDI mapping (Rajaraman ke original mapping se)
+const KEY_MAP = {
+  'a': 57, 'w': 58, 's': 59, 'e': 60, 'd': 61, 'f': 62,
+  't': 63, 'g': 64, 'y': 65, 'h': 66, 'u': 67, 'j': 68,
+  'i': 69, 'k': 70, 'o': 71, 'l': 72, 'p': 73, ';': 74,
+  '[': 75, "'": 76, ']': 77
+};
+
+// Sargam to MIDI offset (Sa = root note)
+const SARGAM_OFFSETS = {
+  'Sa': 0, 'Re': 2, 'Ga': 4, 'Ma': 5, 'Pa': 7,
+  'Dha': 9, 'Ni': 11,
+  'Sa\'': 12, 're': 1, 'ga': 3, 'ma': 6,
+  'dha': 8, 'ni': 10,
+  // Short forms
+  'S': 0, 'R': 2, 'G': 4, 'M': 5, 'P': 7, 'D': 9, 'N': 11,
+  'S\'': 12
+};
+
+// MIDI to keyboard key (reverse lookup)
+const MIDI_TO_KEY = {};
+Object.entries(KEY_MAP).forEach(([k, v]) => MIDI_TO_KEY[v] = k);
+
+function getMidiForSargam(sargam, octaveOffset = 0) {
+  const base = SARGAM_OFFSETS[sargam] ?? SARGAM_OFFSETS[sargam.charAt(0)] ?? 0;
+  return rootNote + base + (octaveOffset * 12);
+}
+
+async function loadHarmonium() {
+  document.getElementById('load-section').innerHTML = '<p style="color:#ffd700;">⏳ Harmonium load ho raha hai...</p>';
+  
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Reverb
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.8;
+    masterGain.connect(audioCtx.destination);
+    
+    // Load harmonium sample from Rajaraman's repo
+    const response = await fetch('https://rajaramaniyer.github.io/harmonium-kannan-orig.wav');
+    if (!response.ok) throw new Error('Sample load failed');
+    const arrayBuffer = await response.arrayBuffer();
+    harmoniumBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+    
+    document.getElementById('load-section').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
+    buildKeyboard();
+    setupKeyboardEvents();
+    showStatus('✅ Harmonium ready! Ab song search karo ya free play karo.', '#38ef7d');
+    
+  } catch(e) {
+    // Fallback: use oscillator-based sound
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.6;
+    masterGain.connect(audioCtx.destination);
+    harmoniumBuffer = null; // Will use oscillator fallback
+    
+    document.getElementById('load-section').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
+    buildKeyboard();
+    setupKeyboardEvents();
+    showStatus('✅ Ready (synthesized sound)! Song search karo.', '#38ef7d');
+  }
+}
+
+function noteOn(midiNote) {
+  if (!audioCtx) return;
+  if (activeNodes[midiNote]) noteOff(midiNote);
+  
+  if (harmoniumBuffer) {
+    // Rajaraman style — pitch-shift the sample
+    const source = audioCtx.createBufferSource();
+    source.buffer = harmoniumBuffer;
+    const semitones = midiNote - 65; // Rajaraman uses note 65 as base
+    source.playbackRate.value = Math.pow(2, semitones / 12);
+    source.loop = true;
+    source.loopStart = 0.5;
+    source.loopEnd = harmoniumBuffer.duration;
+    
+    const gainNode = audioCtx.createGain();
+    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.7, audioCtx.currentTime + 0.05);
+    
+    source.connect(gainNode);
+    gainNode.connect(masterGain);
+    source.start();
+    activeNodes[midiNote] = { source, gainNode };
+  } else {
+    // Oscillator fallback
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.value = 440 * Math.pow(2, (midiNote - 69) / 12);
+    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.05);
+    osc.connect(gainNode);
+    gainNode.connect(masterGain);
+    osc.start();
+    activeNodes[midiNote] = { source: osc, gainNode };
+  }
+  highlightKey(midiNote, true);
+}
+
+function noteOff(midiNote) {
+  const node = activeNodes[midiNote];
+  if (!node) return;
+  node.gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+  setTimeout(() => { try { node.source.stop(); } catch(e){} }, 350);
+  delete activeNodes[midiNote];
+  highlightKey(midiNote, false);
+}
+
+// ============================================================
+// KEYBOARD UI
+// ============================================================
+const KEYBOARD_LAYOUT = [
+  {midi:57,white:true,label:'Sa\na',sargam:'Sa'},{midi:58,white:false,label:'re\nw',sargam:'re'},
+  {midi:59,white:true,label:'Re\ns',sargam:'Re'},{midi:60,white:false,label:'ga\ne',sargam:'ga'},
+  {midi:61,white:true,label:'Ga\nd',sargam:'Ga'},{midi:62,white:true,label:'Ma\nf',sargam:'Ma'},
+  {midi:63,white:false,label:'ma\nt',sargam:'ma'},{midi:64,white:true,label:'Pa\ng',sargam:'Pa'},
+  {midi:65,white:false,label:'dha\ny',sargam:'dha'},{midi:66,white:true,label:'Dha\nh',sargam:'Dha'},
+  {midi:67,white:false,label:'ni\nu',sargam:'ni'},{midi:68,white:true,label:'Ni\nj',sargam:'Ni'},
+  {midi:69,white:true,label:'Sa\'\ni',sargam:"Sa'"},{midi:70,white:false,label:'re\no',sargam:'re'},
+  {midi:71,white:true,label:'Re\nk',sargam:'Re'},{midi:72,white:false,label:'ga\np',sargam:'ga'},
+  {midi:73,white:true,label:'Ga\nl',sargam:'Ga'},{midi:74,white:true,label:'Ma\n;',sargam:'Ma'},
+];
+
+function buildKeyboard() {
+  const kb = document.getElementById('keyboard');
+  kb.innerHTML = '';
+  let whitePos = 0;
+  KEYBOARD_LAYOUT.forEach((k, i) => {
+    const el = document.createElement('div');
+    el.className = 'key ' + (k.white ? 'white' : 'black');
+    el.id = 'key-' + k.midi;
+    el.dataset.midi = k.midi;
+    const parts = k.label.split('\n');
+    el.innerHTML = `<span style="text-align:center;line-height:1.2">${parts[0]}<br><span style="font-size:0.8em;color:#888">${parts[1]||''}</span></span>`;
+    if (k.white) { el.style.left = (whitePos * 44) + 'px'; whitePos++; }
+    else { el.style.left = (whitePos * 44 - 22) + 'px'; }
+    el.addEventListener('mousedown', () => noteOn(k.midi));
+    el.addEventListener('mouseup', () => noteOff(k.midi));
+    el.addEventListener('touchstart', (e) => { e.preventDefault(); noteOn(k.midi); });
+    el.addEventListener('touchend', (e) => { e.preventDefault(); noteOff(k.midi); });
+    kb.appendChild(el);
+  });
+  kb.style.width = (whitePos * 44) + 'px';
+}
+
+function highlightKey(midi, on) {
+  const el = document.getElementById('key-' + midi);
+  if (el) { if (on) el.classList.add('pressed'); else el.classList.remove('pressed'); }
+}
+
+// ============================================================
+// KEYBOARD EVENTS
+// ============================================================
+const pressedKeys = new Set();
+
+function setupKeyboardEvents() {
+  document.addEventListener('keydown', (e) => {
+    if (e.repeat) return;
+    const key = e.key.toLowerCase();
+    if (KEY_MAP[key] !== undefined) {
+      const midi = KEY_MAP[key];
+      noteOn(midi);
+      pressedKeys.add(key);
+      if (gameRunning) checkGameHit(midi);
+    }
+  });
+  document.addEventListener('keyup', (e) => {
+    const key = e.key.toLowerCase();
+    if (KEY_MAP[key] !== undefined) {
+      noteOff(KEY_MAP[key]);
+      pressedKeys.delete(key);
+    }
+  });
+}
+
+// ============================================================
+// CLAUDE AI — SONG SEARCH
+// ============================================================
+async function searchSong() {
+  const songName = document.getElementById('song-input').value.trim();
+  if (!songName) { showStatus('❌ Song ka naam likhao!', '#ff4444'); return; }
+  
+  const apiKey = document.getElementById('api-key-input').value.trim() || CLAUDE_API_KEY;
+  if (!apiKey) { showStatus('❌ Claude API key daalo!', '#ff4444'); return; }
+  
+  const btn = document.getElementById('search-btn');
+  btn.disabled = true;
+  showStatus('🔍 Claude se dhun dhundh raha hoon...', '#ffd700');
+  
+  try {
+    const prompt = `Give me the harmonium/sargam note sequence for the song "${songName}".
+Return ONLY a JSON array with this exact format (no extra text, no markdown):
+[{"note":"Sa","duration":600},{"note":"Re","duration":400},{"note":"Ga","duration":500}]
+
+Rules:
+- Use only these notes: Sa, re, Re, ga, Ga, Ma, ma, Pa, dha, Dha, ni, Ni, Sa'
+- Duration in milliseconds (300-1200 range)
+- Include 16-32 notes for the main hook/mukhda
+- For popular Bollywood songs, give the most recognizable part`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+    
+    const text = data.content[0].text.trim();
+    // Extract JSON from response
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('Notes format mein nahi mila');
+    
+    const notes = JSON.parse(jsonMatch[0]);
+    if (!Array.isArray(notes) || notes.length === 0) throw new Error('Notes empty hain');
+    
+    currentSong = { name: songName, notes };
+    loadNotationStrip(notes);
+    showStatus(`✅ "${songName}" ke ${notes.length} notes mile! Play karo ▶`, '#38ef7d');
+    document.getElementById('play-btn').disabled = false;
+    
+  } catch(e) {
+    showStatus('❌ Error: ' + e.message + ' — Demo song load kar raha hoon...', '#ff4444');
+    // Fallback demo
+    loadDemoSong();
+  }
+  
+  btn.disabled = false;
+}
+
+function loadDemoSong() {
+  const demoNotes = [
+    {note:'Sa',duration:600},{note:'Sa',duration:600},{note:'Re',duration:400},
+    {note:'Ga',duration:800},{note:'Ma',duration:600},{note:'Ga',duration:400},
+    {note:'Re',duration:800},{note:'Sa',duration:600},{note:'Pa',duration:600},
+    {note:'Pa',duration:600},{note:'Dha',duration:400},{note:'Ni',duration:800},
+    {note:"Sa'",duration:1000},{note:'Ni',duration:400},{note:'Dha',duration:600},
+    {note:'Pa',duration:800}
+  ];
+  currentSong = { name: 'Demo Song (Sa Re Ga Ma)', notes: demoNotes };
+  loadNotationStrip(demoNotes);
+  document.getElementById('play-btn').disabled = false;
+}
+
+// ============================================================
+// NOTATION STRIP
+// ============================================================
+let noteColors = {
+  'Sa': '#ff6b6b', 're': '#ff9f43', 'Re': '#ffd700', 'ga': '#6bcb77',
+  'Ga': '#4ecdc4', 'Ma': '#45b7d1', 'ma': '#a29bfe', 'Pa': '#fd79a8',
+  'dha': '#e17055', 'Dha': '#00b894', 'ni': '#74b9ff', 'Ni': '#a29bfe',
+  "Sa'": '#ff6b6b'
+};
+
+function loadNotationStrip(notes) {
+  const strip = document.getElementById('notation-strip');
+  strip.innerHTML = '';
+  notes.forEach((n, i) => {
+    const block = document.createElement('div');
+    block.className = 'note-block upcoming';
+    block.id = 'note-block-' + i;
+    block.dataset.index = i;
+    block.dataset.note = n.note;
+    const midi = getMidiForSargam(n.note);
+    const keyChar = MIDI_TO_KEY[midi] || '?';
+    block.style.borderColor = noteColors[n.note] || '#888';
+    block.innerHTML = `<span class="sargam">${n.note}</span><span class="key-hint">[${keyChar.toUpperCase()}]</span>`;
+    strip.appendChild(block);
+  });
+}
+
+// ============================================================
+// GAME ENGINE
+// ============================================================
+let gameRunning = false;
+let currentNoteIndex = 0;
+let currentSong = null;
+let gameTimer = null;
+let score = 0, hits = 0, misses = 0, combo = 0;
+let waitingForHit = false;
+let hitWindow = false;
+
+function startGame() {
+  if (!currentSong) return;
+  stopGame();
+  gameRunning = true;
+  currentNoteIndex = 0;
+  score = hits = misses = combo = 0;
+  updateScoreDisplay();
+  document.getElementById('stop-btn').disabled = false;
+  
+  // Reset all blocks
+  currentSong.notes.forEach((_, i) => {
+    const b = document.getElementById('note-block-' + i);
+    if (b) { b.className = 'note-block upcoming'; }
+  });
+  
+  playNextNote();
+}
+
+function playNextNote() {
+  if (!gameRunning || !currentSong || currentNoteIndex >= currentSong.notes.length) {
+    endGame(); return;
+  }
+  
+  const speed = parseFloat(document.getElementById('speed-slider').value);
+  const noteData = currentSong.notes[currentNoteIndex];
+  
+  // Scroll strip
+  scrollToNote(currentNoteIndex);
+  
+  // Mark active
+  setNoteState(currentNoteIndex, 'active');
+  waitingForHit = true;
+  hitWindow = true;
+  
+  // Highlight keyboard key
+  const midi = getMidiForSargam(noteData.note);
+  const keyEl = document.getElementById('key-' + midi);
+  if (keyEl) keyEl.classList.add('highlighted');
+  
+  // Hit window duration
+  const hitDuration = (noteData.duration / speed) * 0.9;
+  
+  // Auto-advance after duration
+  gameTimer = setTimeout(() => {
+    if (hitWindow) {
+      // Missed!
+      setNoteState(currentNoteIndex, 'missed');
+      misses++; combo = 0;
+      updateScoreDisplay();
+      showStatus(`❌ Miss! Note tha: ${noteData.note}`, '#ff4444');
+    }
+    hitWindow = false;
+    waitingForHit = false;
+    if (keyEl) keyEl.classList.remove('highlighted');
+    currentNoteIndex++;
+    setTimeout(() => playNextNote(), 200 / speed);
+  }, hitDuration);
+}
+
+function checkGameHit(pressedMidi) {
+  if (!hitWindow || !waitingForHit) return;
+  const noteData = currentSong.notes[currentNoteIndex];
+  const expectedMidi = getMidiForSargam(noteData.note);
+  
+  if (pressedMidi === expectedMidi) {
+    // HIT!
+    hitWindow = false;
+    clearTimeout(gameTimer);
+    setNoteState(currentNoteIndex, 'hit');
+    hits++; combo++; score += 10 * combo;
+    updateScoreDisplay();
+    showStatus(`✅ Sahi! ${noteData.note} — Combo: ${combo}🔥`, '#38ef7d');
+    
+    const keyEl = document.getElementById('key-' + expectedMidi);
+    if (keyEl) keyEl.classList.remove('highlighted');
+    
+    currentNoteIndex++;
+    const speed = parseFloat(document.getElementById('speed-slider').value);
+    setTimeout(() => playNextNote(), 300 / speed);
+  }
+}
+
+function setNoteState(index, state) {
+  const b = document.getElementById('note-block-' + index);
+  if (b) {
+    b.className = 'note-block ' + state;
+    if (state === 'active') {
+      const note = b.dataset.note;
+      b.style.background = '';
+    }
+  }
+}
+
+function scrollToNote(index) {
+  const strip = document.getElementById('notation-strip');
+  const block = document.getElementById('note-block-' + index);
+  if (block) {
+    block.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+}
+
+function stopGame() {
+  gameRunning = false;
+  hitWindow = false;
+  waitingForHit = false;
+  clearTimeout(gameTimer);
+  // Remove all highlights
+  document.querySelectorAll('.key.highlighted').forEach(k => k.classList.remove('highlighted'));
+}
+
+function endGame() {
+  gameRunning = false;
+  const accuracy = hits + misses > 0 ? Math.round(hits / (hits + misses) * 100) : 0;
+  showStatus(`🎉 Song complete! Score: ${score} | Accuracy: ${accuracy}% | Combo Max: ${combo}`, '#ffd700');
+}
+
+function toggleFreePlay() {
+  stopGame();
+  showStatus('🎹 Free Play mode — keyboard bajao!', '#a29bfe');
+}
+
+function updateScoreDisplay() {
+  document.getElementById('score-val').textContent = score;
+  document.getElementById('hits-val').textContent = hits;
+  document.getElementById('misses-val').textContent = misses;
+  document.getElementById('combo-val').textContent = combo;
+}
+
+// Speed slider
+document.addEventListener('DOMContentLoaded', () => {
+  const slider = document.getElementById('speed-slider');
+  if (slider) {
+    slider.addEventListener('input', () => {
+      document.getElementById('speed-val').textContent = slider.value + 'x';
+    });
+  }
+});
+
+function showStatus(msg, color = '#fff') {
+  const el = document.getElementById('status-text');
+  if (el) { el.textContent = msg; el.style.color = color; }
+}
+</script>
 </body>
 </html>
