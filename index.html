@@ -5,21 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HarmoNova 🎵</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Orbitron:wght@700;900&display=swap');
 
 :root {
   --bg: #060612;
-  --lane-bg: #0a0a1a;
   --gold: #ffd700;
   --cyan: #00f5ff;
   --pink: #ff2d78;
   --green: #39ff14;
-  --purple: #b44fff;
-  --hit-zone-y: 80px;
+  --hit-h: 82px; /* px from bottom where hit zone is */
 }
-
 * { margin:0; padding:0; box-sizing:border-box; }
-
 body {
   background: var(--bg);
   color: #fff;
@@ -31,354 +27,339 @@ body {
 }
 
 /* ── HEADER ── */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 20px;
-  background: linear-gradient(90deg, #0d0d2b, #1a0a30);
-  border-bottom: 1px solid #222;
-  flex-shrink: 0;
+.hdr {
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 6px 16px;
+  background: linear-gradient(90deg,#0d0d2b,#1a0a30);
+  border-bottom:1px solid #1a1a3a;
+  flex-shrink:0;
 }
 .logo {
-  font-family: 'Orbitron', monospace;
-  font-size: 1.4em;
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--gold), var(--pink));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 3px;
+  font-family:'Orbitron',monospace; font-size:1.3em; font-weight:900;
+  background:linear-gradient(135deg,var(--gold),var(--pink));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  letter-spacing:3px;
 }
-.score-row {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-}
-.score-box {
-  text-align: center;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 4px 14px;
-  min-width: 60px;
-}
-.score-box .sv { font-family: 'Orbitron', monospace; font-size: 1.2em; color: var(--gold); font-weight: 700; }
-.score-box .sl { font-size: 0.65em; color: #666; letter-spacing: 1px; }
+.score-row { display:flex; gap:14px; }
+.sb { text-align:center; background:rgba(255,255,255,0.05); border:1px solid #2a2a4a; border-radius:7px; padding:3px 12px; min-width:52px; }
+.sb .v { font-family:'Orbitron',monospace; font-size:1.1em; color:var(--gold); font-weight:700; }
+.sb .l { font-size:0.6em; color:#555; letter-spacing:1px; }
 
-/* ── SONG SELECTOR ── */
-.song-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 20px;
-  background: #0a0a1a;
-  border-bottom: 1px solid #1a1a3a;
-  flex-shrink: 0;
-  flex-wrap: wrap;
+/* ── SEARCH BAR ── */
+.search-bar {
+  display:flex; align-items:center; gap:8px;
+  padding:6px 16px;
+  background:#08081a;
+  border-bottom:1px solid #141430;
+  flex-shrink:0; flex-wrap:wrap;
 }
-.song-bar label { color: #888; font-size: 0.85em; letter-spacing: 1px; }
-.song-select {
-  background: #12122a;
-  color: var(--cyan);
-  border: 1px solid #2a2a5a;
-  border-radius: 20px;
-  padding: 5px 14px;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 0.95em;
-  outline: none;
-  cursor: pointer;
+.search-bar input {
+  flex:1; min-width:200px; max-width:380px;
+  background:#12122e; color:#fff; border:1px solid #2a2a5a;
+  border-radius:20px; padding:6px 16px;
+  font-family:'Rajdhani',sans-serif; font-size:0.95em; outline:none;
 }
-.speed-wrap { display:flex; align-items:center; gap:8px; margin-left: auto; }
-.speed-wrap label { color:#666; font-size:0.8em; }
-.speed-wrap input[type=range] { accent-color: var(--cyan); width: 80px; }
-#speed-lbl { color: var(--cyan); font-size:0.85em; width:28px; }
-
+.search-bar input::placeholder { color:#445; }
 .btn {
-  padding: 6px 18px;
-  border-radius: 20px;
-  border: none;
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
-  font-size: 0.95em;
-  cursor: pointer;
-  transition: all 0.15s;
-  letter-spacing: 1px;
+  padding:6px 16px; border-radius:20px; border:none;
+  font-family:'Rajdhani',sans-serif; font-weight:700; font-size:0.9em;
+  cursor:pointer; transition:all 0.15s; letter-spacing:1px;
+  white-space:nowrap;
 }
-.btn:hover { transform: scale(1.05); }
+.btn:hover:not(:disabled) { transform:scale(1.05); }
 .btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
-.btn-play { background: linear-gradient(135deg, #00c853, #39ff14); color:#000; }
-.btn-stop { background: linear-gradient(135deg, #ff2d78, #ff6600); color:#fff; }
-.btn-free { background: rgba(255,255,255,0.08); color:#aaa; border:1px solid #333; }
+.btn-search { background:linear-gradient(135deg,#7b2ff7,#00f5ff); color:#fff; }
+.btn-play   { background:linear-gradient(135deg,#00c853,#39ff14); color:#000; }
+.btn-stop   { background:linear-gradient(135deg,#ff2d78,#ff6600); color:#fff; }
+.btn-free   { background:rgba(255,255,255,0.07); color:#aaa; border:1px solid #333; }
+.spd { display:flex; align-items:center; gap:6px; margin-left:auto; }
+.spd label { color:#555; font-size:0.78em; }
+.spd input[type=range] { accent-color:var(--cyan); width:70px; }
+#spd-lbl { color:var(--cyan); font-size:0.82em; width:26px; }
+.api-wrap { display:flex; align-items:center; gap:6px; }
+.api-wrap input {
+  background:#12122e; color:#aaa; border:1px solid #2a2a4a;
+  border-radius:20px; padding:5px 12px;
+  font-family:'Rajdhani',sans-serif; font-size:0.82em; outline:none;
+  width:220px;
+}
+.api-wrap input::placeholder { color:#334; }
 
 /* ── STATUS ── */
-.status-bar {
-  text-align: center;
-  font-size: 0.82em;
-  color: var(--gold);
-  padding: 3px 20px;
-  background: rgba(255,215,0,0.04);
-  flex-shrink: 0;
-  min-height: 22px;
-  letter-spacing: 0.5px;
+.status {
+  flex-shrink:0; text-align:center; font-size:0.82em;
+  color:var(--gold); padding:3px 16px; min-height:20px;
+  background:rgba(255,215,0,0.03); letter-spacing:.5px;
 }
 
 /* ── GAME AREA ── */
 .game-area {
-  flex: 1;
-  display: flex;
-  position: relative;
-  overflow: hidden;
-  min-height: 0;
+  flex:1; display:flex; position:relative; overflow:hidden; min-height:0;
 }
-
-/* LANES */
-#lanes-container {
-  display: flex;
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-}
+#lanes { display:flex; flex:1; position:relative; overflow:hidden; }
 
 .lane {
-  flex: 1;
-  position: relative;
-  border-right: 1px solid rgba(255,255,255,0.04);
-  background: repeating-linear-gradient(
-    180deg,
-    transparent 0px,
-    transparent 39px,
-    rgba(255,255,255,0.015) 40px
-  );
+  flex:1; position:relative;
+  border-right:1px solid rgba(255,255,255,0.04);
+  background: repeating-linear-gradient(180deg,transparent 0,transparent 39px,rgba(255,255,255,0.012) 40px);
 }
-.lane:last-child { border-right: none; }
-
-/* Lane header (note label at top) */
-.lane-header {
-  position: absolute;
-  top: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Orbitron', monospace;
-  font-size: 0.7em;
-  font-weight: 700;
-  color: rgba(255,255,255,0.2);
-  letter-spacing: 1px;
-  z-index: 2;
-  pointer-events: none;
-  white-space: nowrap;
+.lane:last-child { border-right:none; }
+.lane-top {
+  position:absolute; top:4px; left:50%; transform:translateX(-50%);
+  font-family:'Orbitron',monospace; font-size:0.62em; font-weight:700;
+  color:rgba(255,255,255,0.15); pointer-events:none; white-space:nowrap; z-index:2;
 }
 
-/* HIT ZONE line */
+/* Hit zone */
 .hit-line {
-  position: absolute;
-  left: 0; right: 0;
-  bottom: var(--hit-zone-y);
-  height: 3px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  opacity: 0.5;
-  z-index: 5;
-  pointer-events: none;
+  position:absolute; left:0; right:0; bottom:var(--hit-h);
+  height:3px; z-index:6; pointer-events:none;
+  background:linear-gradient(90deg,transparent 0%,var(--gold) 50%,transparent 100%);
+  opacity:.55;
 }
-.hit-line::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0;
-  top: -6px; bottom: -6px;
-  background: linear-gradient(180deg, transparent, rgba(255,215,0,0.06), transparent);
+.hit-line::before {
+  content:''; position:absolute; left:0; right:0; top:-10px; bottom:-10px;
+  background:linear-gradient(180deg,transparent,rgba(255,215,0,0.05),transparent);
 }
 
-/* FALLING NOTES */
-.falling-note {
-  position: absolute;
-  left: 8%;
-  width: 84%;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Orbitron', monospace;
-  font-size: 0.72em;
-  font-weight: 700;
-  color: #000;
-  z-index: 10;
-  pointer-events: none;
-  transition: box-shadow 0.05s;
-  box-shadow: 0 0 12px currentColor;
-  letter-spacing: 0.5px;
+/* Lane flash */
+.lflash {
+  position:absolute; inset:0; pointer-events:none; opacity:0;
+  transition:opacity .05s; z-index:3;
 }
 
-/* HIT FLASH overlay per lane */
-.lane-flash {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.05s;
-  z-index: 3;
+/* ── FALLING NOTES ── */
+.fnote {
+  position:absolute; left:6%; width:88%;
+  border-radius:8px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  pointer-events:none; z-index:10;
+  transition:box-shadow .05s;
 }
+.fnote .fn-sargam {
+  font-family:'Orbitron',monospace; font-weight:700;
+  font-size:.75em; color:#000; line-height:1; letter-spacing:.5px;
+}
+.fnote .fn-key {
+  font-size:.6em; color:rgba(0,0,0,0.6); font-weight:600;
+  font-family:'Rajdhani',sans-serif; margin-top:1px;
+}
+.fnote.hit-flash { background:#39ff14 !important; box-shadow:0 0 30px #39ff14 !important; }
 
-/* ── KEYBOARD ── */
-.keyboard-section {
-  flex-shrink: 0;
-  background: #0a0a18;
-  border-top: 2px solid #1a1a3a;
-  overflow-x: auto;
-  padding: 8px 0 6px;
-}
-.keyboard-wrap {
-  display: flex;
-  justify-content: center;
-  min-width: 600px;
-  position: relative;
-  height: 110px;
-  margin: 0 auto;
-  width: fit-content;
-}
-
-.piano-key {
-  position: absolute;
-  bottom: 0;
-  border-radius: 0 0 8px 8px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  padding-bottom: 6px;
-  user-select: none;
-  transition: background 0.06s, transform 0.06s, box-shadow 0.06s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.piano-key.white-key {
-  width: 46px;
-  height: 110px;
-  background: linear-gradient(180deg, #ddd8c4 0%, #f5efe0 50%, #e8dfc8 100%);
-  border: 1px solid #bbb;
-  z-index: 1;
-  border-bottom: 3px solid #999;
-}
-.piano-key.black-key {
-  width: 30px;
-  height: 68px;
-  background: linear-gradient(180deg, #1a1a1a 0%, #333 60%, #111 100%);
-  border: 1px solid #000;
-  z-index: 2;
-  border-bottom: 3px solid #000;
-}
-
-.piano-key.white-key .k-sargam { font-size: 0.62em; color: #444; font-weight: 700; font-family:'Rajdhani',sans-serif; line-height:1; }
-.piano-key.white-key .k-key   { font-size: 0.56em; color: #888; font-family:'Rajdhani',sans-serif; }
-.piano-key.black-key .k-sargam { font-size: 0.55em; color: #ccc; font-weight: 700; font-family:'Rajdhani',sans-serif; line-height:1; }
-.piano-key.black-key .k-key   { font-size: 0.5em;  color: #666; font-family:'Rajdhani',sans-serif; }
-
-.piano-key.white-key:active,
-.piano-key.white-key.pressed {
-  background: linear-gradient(180deg, var(--gold), #ffcc00) !important;
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 #cc9900 !important;
-}
-.piano-key.black-key:active,
-.piano-key.black-key.pressed {
-  background: linear-gradient(180deg, #443300, #665500) !important;
-  transform: translateY(2px);
-}
-
-/* KEY HIGHLIGHT (when note is active) */
-.piano-key.lit-up.white-key {
-  background: linear-gradient(180deg, var(--cyan), #0099cc) !important;
-  box-shadow: 0 0 20px var(--cyan), 0 0 40px rgba(0,245,255,0.3) !important;
-}
-.piano-key.lit-up.black-key {
-  background: linear-gradient(180deg, #005566, var(--cyan)) !important;
-  box-shadow: 0 0 16px var(--cyan) !important;
-}
-
-/* COMBO DISPLAY */
-#combo-display {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  font-family: 'Orbitron', monospace;
-  font-size: 3em;
-  font-weight: 900;
-  color: var(--gold);
-  text-shadow: 0 0 30px var(--gold);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s;
-  z-index: 100;
-}
-
-/* MISS INDICATOR */
+/* miss pop */
 .miss-pop {
-  position: absolute;
-  font-family: 'Orbitron', monospace;
-  font-size: 1.2em;
-  color: var(--pink);
-  font-weight: 700;
-  pointer-events: none;
-  animation: missAnim 0.6s ease-out forwards;
-  z-index: 50;
-  text-shadow: 0 0 10px var(--pink);
+  position:absolute; font-family:'Orbitron',monospace; font-size:1em;
+  color:var(--pink); font-weight:700; pointer-events:none;
+  animation:mpop .6s ease-out forwards; z-index:50;
+  text-shadow:0 0 10px var(--pink); left:50%; transform:translateX(-50%);
 }
-@keyframes missAnim {
-  0%   { opacity:1; transform: translateY(0) scale(1); }
-  100% { opacity:0; transform: translateY(-40px) scale(0.7); }
+@keyframes mpop { 0%{opacity:1;bottom:100px} 100%{opacity:0;bottom:150px} }
+
+/* combo display */
+#combo-disp {
+  position:fixed; top:42%; left:50%; transform:translate(-50%,-50%);
+  font-family:'Orbitron',monospace; font-size:2.4em; font-weight:900;
+  color:var(--gold); text-shadow:0 0 30px var(--gold);
+  pointer-events:none; opacity:0; transition:opacity .3s; z-index:100;
 }
+
+/* ── RAJARAMAN KEYBOARD ── */
+.kb-section {
+  flex-shrink:0;
+  background:#06060f;
+  border-top:2px solid #1a1a3a;
+  overflow-x:auto;
+  padding:0;
+}
+.kb-outer {
+  min-width:700px; width:fit-content; margin:0 auto;
+  padding:10px 16px 8px;
+}
+/* Number row (black key labels) */
+.kb-num-row {
+  display:flex; margin-bottom:3px;
+  height:18px;
+}
+.kb-num-cell {
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.68em; color:#666; font-family:'Rajdhani',sans-serif;
+  font-weight:600;
+}
+
+/* Main keyboard */
+.kb-wrap {
+  position:relative;
+  height:108px;
+}
+.wkey, .bkey {
+  position:absolute; bottom:0;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:flex-end;
+  padding-bottom:6px;
+  cursor:pointer; border-radius:0 0 7px 7px;
+  user-select:none; -webkit-tap-highlight-color:transparent;
+  transition:background .06s, transform .06s;
+}
+.wkey {
+  height:108px; background:linear-gradient(180deg,#ddd8c4,#f0e8d4 60%,#e0d8c0);
+  border:1px solid #bbb; border-bottom:3px solid #999; z-index:1;
+}
+.wkey .wl { font-family:'Rajdhani',sans-serif; font-size:.65em; font-weight:700; color:#333; line-height:1; }
+.wkey .wk { font-family:'Rajdhani',sans-serif; font-size:.6em; color:#888; }
+.wkey .wc { font-family:'Rajdhani',sans-serif; font-size:.62em; font-weight:700; color:#0055cc; }
+
+.bkey {
+  height:66px; background:linear-gradient(180deg,#1a1a1a,#333 60%,#111);
+  border:1px solid #000; border-bottom:3px solid #000; z-index:2;
+}
+.bkey .wl { font-family:'Rajdhani',sans-serif; font-size:.58em; font-weight:700; color:#ccc; line-height:1; }
+.bkey .wk { font-family:'Rajdhani',sans-serif; font-size:.52em; color:#555; }
+
+/* Pressed states */
+.wkey:active, .wkey.pressed {
+  background:linear-gradient(180deg,var(--gold),#ffcc00) !important;
+  transform:translateY(2px);
+  box-shadow:0 2px 0 #cc9900 !important;
+}
+.bkey:active, .bkey.pressed {
+  background:linear-gradient(180deg,#443300,#665500) !important;
+  transform:translateY(2px);
+}
+/* Lit up (next note hint) */
+.wkey.lit { background:linear-gradient(180deg,#00c8ff,#0099cc) !important; box-shadow:0 0 20px var(--cyan), 0 0 40px rgba(0,245,255,.25) !important; }
+.bkey.lit { background:linear-gradient(180deg,#004455,var(--cyan)) !important; box-shadow:0 0 16px var(--cyan) !important; }
+
+/* Western label row below keyboard */
+.kb-west-row { display:flex; margin-top:4px; height:16px; }
+.kb-west-cell { display:flex; align-items:center; justify-content:center; font-size:.68em; font-weight:700; font-family:'Orbitron',monospace; color:#0055cc; }
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<div class="header">
+<div class="hdr">
   <div class="logo">HARMONOVA</div>
   <div class="score-row">
-    <div class="score-box"><div class="sv" id="sv-score">0</div><div class="sl">SCORE</div></div>
-    <div class="score-box"><div class="sv" id="sv-hits" style="color:var(--green)">0</div><div class="sl">HITS</div></div>
-    <div class="score-box"><div class="sv" id="sv-miss" style="color:var(--pink)">0</div><div class="sl">MISS</div></div>
-    <div class="score-box"><div class="sv" id="sv-combo" style="color:var(--cyan)">0</div><div class="sl">COMBO</div></div>
+    <div class="sb"><div class="v" id="v-score">0</div><div class="l">SCORE</div></div>
+    <div class="sb"><div class="v" id="v-hits" style="color:var(--green)">0</div><div class="l">HITS</div></div>
+    <div class="sb"><div class="v" id="v-miss" style="color:var(--pink)">0</div><div class="l">MISS</div></div>
+    <div class="sb"><div class="v" id="v-combo" style="color:var(--cyan)">0</div><div class="l">COMBO</div></div>
   </div>
 </div>
 
-<!-- SONG BAR -->
-<div class="song-bar">
-  <label>🎵 SONG:</label>
-  <select class="song-select" id="song-select" onchange="onSongChange()"></select>
-  <button class="btn btn-play" id="btn-play" onclick="startGame()">▶ PLAY</button>
-  <button class="btn btn-stop" id="btn-stop" onclick="stopGame()" disabled>■ STOP</button>
-  <button class="btn btn-free" onclick="freePlay()">🎹 FREE</button>
-  <div class="speed-wrap">
-    <label>SPEED</label>
-    <input type="range" id="speed-slider" min="0.4" max="2" step="0.1" value="1" oninput="onSpeedChange()">
-    <span id="speed-lbl">1x</span>
+<!-- SEARCH BAR -->
+<div class="search-bar">
+  <!-- API Key -->
+  <div class="api-wrap">
+    <input type="password" id="api-key" placeholder="🔑 Claude API key (sk-ant-...)">
+  </div>
+  <!-- Song search -->
+  <input type="text" id="song-input" placeholder="🎵 Koi bhi song likhao... (Tum Hi Ho, Shape of You, etc.)" />
+  <button class="btn btn-search" id="btn-search" onclick="searchSong()">🔍 Search</button>
+  <!-- Controls -->
+  <button class="btn btn-play"  id="btn-play"  onclick="startGame()" disabled>▶ Play</button>
+  <button class="btn btn-stop"  id="btn-stop"  onclick="stopGame()"  disabled>■ Stop</button>
+  <button class="btn btn-free"  onclick="freePlay()">🎹 Free</button>
+  <div class="spd">
+    <label>SPD</label>
+    <input type="range" id="spd" min="0.4" max="2" step="0.1" value="1" oninput="document.getElementById('spd-lbl').textContent=this.value+'x'">
+    <span id="spd-lbl">1x</span>
   </div>
 </div>
 
 <!-- STATUS -->
-<div class="status-bar" id="status-bar">Song choose karo aur PLAY dabaao 🎵</div>
+<div class="status" id="status">Song likhao aur 🔍 Search karo — ya pehle se loaded songs ke liye neeche dekho ↓</div>
 
 <!-- GAME AREA -->
-<div class="game-area" id="game-area">
-  <div id="lanes-container"></div>
-  <div class="hit-line" id="hit-line"></div>
+<div class="game-area">
+  <div id="lanes"></div>
+  <div class="hit-line"></div>
 </div>
 
-<!-- KEYBOARD -->
-<div class="keyboard-section">
-  <div class="keyboard-wrap" id="keyboard-wrap"></div>
-</div>
+<!-- COMBO -->
+<div id="combo-disp"></div>
 
-<!-- COMBO DISPLAY -->
-<div id="combo-display"></div>
+<!-- KEYBOARD (Rajaraman layout) -->
+<div class="kb-section" id="kb-section">
+  <div class="kb-outer">
+    <div class="kb-num-row" id="kb-num-row"></div>
+    <div class="kb-wrap"  id="kb-wrap"></div>
+    <div class="kb-west-row" id="kb-west-row"></div>
+  </div>
+</div>
 
 <script>
-// ══════════════════════════════════════════════════
-//  SONG LIBRARY — popular Bollywood songs (sargam)
-// ══════════════════════════════════════════════════
-const SONGS = {
-  "Tum Hi Ho (Aashiqui 2)": [
+// ════════════════════════════════════════════════════
+//  RAJARAMAN KEYBOARD DEFINITION
+//  Exact mapping from webharmonium.html
+// ════════════════════════════════════════════════════
+// White keys: ` q w e r t y u i o p [ ] \
+// Black keys (above white): 1(between `&q) 2(q&w) 4(e&r) 5(r&t) 7(u&i) 8(i&o) 9(o&p) -(p&[) =([ &])
+// Western: C D E F G A B c d e f g a b
+// MIDI octave 4: C4=60, D4=62, E4=64, F4=65, G4=67, A4=69, B4=71
+// Black: C#4=61, D#4=63, F#4=66, G#4=68, A#4=70
+
+const WKEYS = [
+  { key:'`', midi:60, sargam:'Sa',  west:'C', label:'C' },
+  { key:'q', midi:62, sargam:'Re',  west:'D', label:'D' },
+  { key:'w', midi:64, sargam:'Ga',  west:'E', label:'E' },
+  { key:'e', midi:65, sargam:'Ma',  west:'F', label:'F' },
+  { key:'r', midi:67, sargam:'Pa',  west:'G', label:'G' },
+  { key:'t', midi:69, sargam:'Dha', west:'A', label:'A' },
+  { key:'y', midi:71, sargam:'Ni',  west:'B', label:'B' },
+  { key:'u', midi:72, sargam:"Sa'", west:'c', label:'c' },
+  { key:'i', midi:74, sargam:"Re'", west:'d', label:'d' },
+  { key:'o', midi:76, sargam:"Ga'", west:'e', label:'e' },
+  { key:'p', midi:77, sargam:"Ma'", west:'f', label:'f' },
+  { key:'[', midi:79, sargam:"Pa'", west:'g', label:'g' },
+  { key:']', midi:81, sargam:"Dha'",west:'a', label:'a' },
+  { key:'\\',midi:83, sargam:"Ni'", west:'b', label:'b' },
+];
+const BKEYS = [
+  { key:'1', midi:61, sargam:'re',   after:'`' },  // C# between ` and q
+  { key:'2', midi:63, sargam:'ga',   after:'q' },  // D# between q and w
+  // no black between w(E) and e(F)
+  { key:'4', midi:66, sargam:'ma',   after:'e' },  // F# between e and r
+  { key:'5', midi:68, sargam:'dha',  after:'r' },  // G# between r and t
+  // no black between t(A) and y... wait, actually:
+  { key:'7', midi:73, sargam:"re'",  after:'u' },  // c# between u and i
+  { key:'8', midi:75, sargam:"ga'",  after:'i' },  // d# between i and o
+  // no black between o(e) and p(f)
+  { key:'9', midi:78, sargam:"ma'",  after:'p' },  // f# between p and [
+  { key:'-', midi:80, sargam:"dha'", after:'[' },  // g# between [ and ]
+  { key:'=', midi:82, sargam:"ni'",  after:']' },  // a# between ] and \
+];
+
+// Build lookup maps
+const KEY_MIDI = {};
+const MIDI_KEY = {};
+const MIDI_SARGAM = {};
+const SARGAM_MIDI = {};
+[...WKEYS,...BKEYS].forEach(k => {
+  KEY_MIDI[k.key] = k.midi;
+  MIDI_KEY[k.midi] = k.key;
+  MIDI_SARGAM[k.midi] = k.sargam;
+  SARGAM_MIDI[k.sargam] = k.midi;
+});
+
+// ════════════════════════════════════════════════════
+//  NOTE COLORS
+// ════════════════════════════════════════════════════
+const NOTE_COLOR = {
+  'Sa':'#ff4d6d','re':'#ff7a45','Re':'#ffd700','ga':'#a8e63c',
+  'Ga':'#00f5ff','Ma':'#45aaff','ma':'#c084fc','Pa':'#ff69b4',
+  'dha':'#ffb347','Dha':'#39ff14','ni':'#00e5ff','Ni':'#ff2d78',
+  "Sa'":'#ff4d6d',"Re'":'#ffd700',"Ga'":'#00f5ff',"Ma'":'#45aaff',
+  "Pa'":'#ff69b4',"Dha'":'#39ff14',"Ni'":'#ff2d78',
+  "re'":'#ff7a45',"ga'":'#a8e63c',"ma'":'#c084fc',
+  "dha'":'#ffb347',"ni'":'#00e5ff',
+};
+
+// ════════════════════════════════════════════════════
+//  BUILT-IN SONGS (fallback when no API key)
+// ════════════════════════════════════════════════════
+const BUILTIN = {
+  "Tum Hi Ho": [
     {n:'Sa',d:700},{n:'Sa',d:500},{n:'Ga',d:700},{n:'Ma',d:600},
     {n:'Ga',d:400},{n:'Re',d:800},{n:'Sa',d:900},
     {n:'Sa',d:500},{n:'Re',d:500},{n:'Ga',d:600},{n:'Ma',d:700},
@@ -388,38 +369,17 @@ const SONGS = {
   ],
   "Kal Ho Na Ho": [
     {n:'Pa',d:600},{n:'Dha',d:400},{n:"Sa'",d:700},{n:'Ni',d:500},
-    {n:'Dha',d:600},{n:'Pa',d:800},{n:'Ga',d:700},
-    {n:'Ma',d:500},{n:'Pa',d:500},{n:'Dha',d:600},{n:"Sa'",d:900},
-    {n:"Sa'",d:500},{n:'Ni',d:500},{n:'Dha',d:700},
-    {n:'Pa',d:600},{n:'Ga',d:800},{n:'Ma',d:700},{n:'Re',d:600},{n:'Sa',d:1000}
+    {n:'Dha',d:600},{n:'Pa',d:800},{n:'Ga',d:700},{n:'Ma',d:500},
+    {n:'Pa',d:500},{n:'Dha',d:600},{n:"Sa'",d:900},
+    {n:'Ni',d:500},{n:'Dha',d:700},{n:'Pa',d:600},
+    {n:'Ga',d:800},{n:'Ma',d:700},{n:'Re',d:600},{n:'Sa',d:1000}
   ],
-  "Arz Kiya Hai (Qawwali)": [
+  "Arz Kiya Hai": [
     {n:'Sa',d:400},{n:'Re',d:400},{n:'Ga',d:400},{n:'Ma',d:400},
-    {n:'Pa',d:600},{n:'Ma',d:400},{n:'Ga',d:400},{n:'Re',d:600},
-    {n:'Sa',d:800},{n:'Re',d:400},{n:'Ga',d:600},{n:'Pa',d:600},
-    {n:'Dha',d:400},{n:'Ni',d:400},{n:"Sa'",d:800},
-    {n:'Ni',d:400},{n:'Dha',d:400},{n:'Pa',d:600},{n:'Ga',d:800},{n:'Re',d:600},{n:'Sa',d:1000}
-  ],
-  "Lag Ja Gale": [
-    {n:'Ga',d:800},{n:'Ma',d:600},{n:'Pa',d:700},{n:'Dha',d:500},
-    {n:'Pa',d:600},{n:'Ma',d:500},{n:'Ga',d:900},
-    {n:'Re',d:700},{n:'Ga',d:600},{n:'Ma',d:800},
-    {n:'Pa',d:600},{n:'Dha',d:700},{n:'Ni',d:600},{n:"Sa'",d:1000},
-    {n:'Ni',d:500},{n:'Pa',d:600},{n:'Ma',d:600},{n:'Ga',d:800},{n:'Re',d:700},{n:'Sa',d:1000}
-  ],
-  "Raabta (Agent Sai)": [
-    {n:'Sa',d:500},{n:'Re',d:500},{n:'Ma',d:700},{n:'Pa',d:600},
-    {n:'Pa',d:500},{n:'Dha',d:600},{n:'Pa',d:400},{n:'Ma',d:800},
-    {n:'Ga',d:700},{n:'Ma',d:600},{n:'Re',d:500},{n:'Sa',d:900},
-    {n:'Ni',d:500},{n:'Dha',d:600},{n:'Pa',d:700},{n:'Ma',d:500},
-    {n:'Ga',d:600},{n:'Re',d:600},{n:'Sa',d:1000}
-  ],
-  "Tujhe Dekha To (DDLJ)": [
-    {n:'Ga',d:700},{n:'Ma',d:500},{n:'Pa',d:600},{n:'Pa',d:500},
-    {n:'Dha',d:700},{n:'Pa',d:800},{n:'Ma',d:600},
-    {n:'Ga',d:500},{n:'Ma',d:600},{n:'Ga',d:400},{n:'Re',d:800},{n:'Sa',d:900},
-    {n:'Re',d:500},{n:'Ga',d:500},{n:'Ma',d:700},{n:'Pa',d:600},{n:'Dha',d:600},
-    {n:'Ni',d:500},{n:"Sa'",d:1000}
+    {n:'Pa',d:600},{n:'Ma',d:400},{n:'Ga',d:400},{n:'Re',d:600},{n:'Sa',d:800},
+    {n:'Re',d:400},{n:'Ga',d:600},{n:'Pa',d:600},{n:'Dha',d:400},
+    {n:'Ni',d:400},{n:"Sa'",d:800},{n:'Ni',d:400},{n:'Dha',d:400},
+    {n:'Pa',d:600},{n:'Ga',d:800},{n:'Re',d:600},{n:'Sa',d:1000}
   ],
   "Sa Re Ga Ma (Practice)": [
     {n:'Sa',d:600},{n:'Re',d:600},{n:'Ga',d:600},{n:'Ma',d:600},
@@ -427,507 +387,478 @@ const SONGS = {
     {n:"Sa'",d:600},{n:'Ni',d:600},{n:'Dha',d:600},{n:'Pa',d:600},
     {n:'Ma',d:600},{n:'Ga',d:600},{n:'Re',d:600},{n:'Sa',d:1000}
   ],
-  "Ek Pyar Ka Nagma": [
-    {n:'Sa',d:600},{n:'Ga',d:600},{n:'Ma',d:700},{n:'Pa',d:500},
-    {n:'Dha',d:600},{n:'Pa',d:500},{n:'Ma',d:800},
-    {n:'Ga',d:700},{n:'Re',d:600},{n:'Sa',d:900},
-    {n:'Re',d:500},{n:'Ma',d:600},{n:'Pa',d:700},{n:'Dha',d:600},
-    {n:'Ni',d:500},{n:'Dha',d:500},{n:'Pa',d:700},{n:'Ma',d:600},{n:'Ga',d:800},{n:'Sa',d:1000}
-  ]
 };
 
-// ══════════════════════════════════════════════════
-//  HARMONIUM NOTES & KEYBOARD LAYOUT
-// ══════════════════════════════════════════════════
-// Sa=C4(60), Re=D4(62), Ga=E4(64), Ma=F4(65), Pa=G4(67),
-// Dha=A4(69), Ni=B4(71), Sa'=C5(72)
-// Komal: re=C#4(61), ga=Eb4(63), ma=F#4(66), dha=Ab4(68), ni=Bb4(70)
+// ════════════════════════════════════════════════════
+//  AUDIO ENGINE
+// ════════════════════════════════════════════════════
+let audioCtx=null, masterGain=null;
+const activeAudio={};
 
-const SARGAM_MIDI = {
-  'Sa':60, 're':61, 'Re':62, 'ga':63, 'Ga':64, 'Ma':65, 'ma':66,
-  'Pa':67, 'dha':68, 'Dha':69, 'ni':70, 'Ni':71, "Sa'":72,
-  "re'":73, "Re'":74, "ga'":75
-};
-
-const SARGAM_COLOR = {
-  'Sa':'#ff4d6d', 're':'#ff7a45', 'Re':'#ffd700', 'ga':'#a8ff3e',
-  'Ga':'#00f5ff', 'Ma':'#45b7ff', 'ma':'#b44fff', 'Pa':'#ff69b4',
-  'dha':'#ff9f00', 'Dha':'#39ff14', 'ni':'#00e5ff', 'Ni':'#ff2d78',
-  "Sa'": '#ff4d6d'
-};
-
-const KEYBOARD_LAYOUT = [
-  {midi:60, white:true,  sargam:'Sa',  key:'a'},
-  {midi:61, white:false, sargam:'re',  key:'w'},
-  {midi:62, white:true,  sargam:'Re',  key:'s'},
-  {midi:63, white:false, sargam:'ga',  key:'e'},
-  {midi:64, white:true,  sargam:'Ga',  key:'d'},
-  {midi:65, white:true,  sargam:'Ma',  key:'f'},
-  {midi:66, white:false, sargam:'ma',  key:'t'},
-  {midi:67, white:true,  sargam:'Pa',  key:'g'},
-  {midi:68, white:false, sargam:'dha', key:'y'},
-  {midi:69, white:true,  sargam:'Dha', key:'h'},
-  {midi:70, white:false, sargam:'ni',  key:'u'},
-  {midi:71, white:true,  sargam:'Ni',  key:'j'},
-  {midi:72, white:true,  sargam:"Sa'", key:'k'},
-  {midi:73, white:false, sargam:"re'", key:'o'},
-  {midi:74, white:true,  sargam:"Re'", key:'l'},
-];
-
-const KEY_TO_MIDI = {};
-KEYBOARD_LAYOUT.forEach(k => KEY_TO_MIDI[k.key] = k.midi);
-const MIDI_TO_KEY = {};
-KEYBOARD_LAYOUT.forEach(k => MIDI_TO_KEY[k.midi] = k.key);
-
-// Get unique MIDI notes used in songs
-function getUsedNotes(notes) {
-  const seen = new Set();
-  const result = [];
-  notes.forEach(n => {
-    const m = SARGAM_MIDI[n.n];
-    if (m !== undefined && !seen.has(m)) { seen.add(m); result.push({sargam: n.n, midi: m}); }
-  });
-  return result;
-}
-
-// ══════════════════════════════════════════════════
-//  AUDIO ENGINE (WebAudio — harmonium timbre)
-// ══════════════════════════════════════════════════
-let audioCtx = null;
-let masterGain = null;
-const activeNodes = {};
-
-function initAudio() {
-  if (audioCtx) return;
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  masterGain = audioCtx.createGain();
-  masterGain.gain.value = 0.55;
+function initAudio(){
+  if(audioCtx) return;
+  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  masterGain=audioCtx.createGain(); masterGain.gain.value=0.55;
   masterGain.connect(audioCtx.destination);
 }
-
-function noteOn(midi) {
+function noteOn(midi){
   initAudio();
-  if (activeNodes[midi]) noteOff(midi);
-  const freq = 440 * Math.pow(2, (midi - 69) / 12);
-
-  // Harmonium timbre: fundamental + harmonics
-  const osc1 = audioCtx.createOscillator();
-  const osc2 = audioCtx.createOscillator();
-  const osc3 = audioCtx.createOscillator();
-  osc1.type = 'sawtooth'; osc1.frequency.value = freq;
-  osc2.type = 'square';   osc2.frequency.value = freq * 2; 
-  osc3.type = 'sine';     osc3.frequency.value = freq * 0.5;
-
-  const g1 = audioCtx.createGain(); g1.gain.value = 0.5;
-  const g2 = audioCtx.createGain(); g2.gain.value = 0.15;
-  const g3 = audioCtx.createGain(); g3.gain.value = 0.2;
-  const mainGain = audioCtx.createGain();
-
-  // Soft attack (bellows feel)
-  mainGain.gain.setValueAtTime(0, audioCtx.currentTime);
-  mainGain.gain.linearRampToValueAtTime(0.7, audioCtx.currentTime + 0.08);
-
-  // Low-pass filter for warm harmonium tone
-  const filter = audioCtx.createBiquadFilter();
-  filter.type = 'lowpass'; filter.frequency.value = 2200; filter.Q.value = 0.8;
-
-  osc1.connect(g1); osc2.connect(g2); osc3.connect(g3);
-  g1.connect(filter); g2.connect(filter); g3.connect(filter);
-  filter.connect(mainGain);
-  mainGain.connect(masterGain);
-
-  osc1.start(); osc2.start(); osc3.start();
-  activeNodes[midi] = { oscs:[osc1,osc2,osc3], gain: mainGain };
-
-  const keyEl = document.getElementById('pkey-'+midi);
-  if (keyEl) keyEl.classList.add('pressed','lit-up');
+  if(activeAudio[midi]) noteOff(midi);
+  const freq=440*Math.pow(2,(midi-69)/12);
+  const o1=audioCtx.createOscillator(), o2=audioCtx.createOscillator(), o3=audioCtx.createOscillator();
+  o1.type='sawtooth'; o1.frequency.value=freq;
+  o2.type='square';   o2.frequency.value=freq*2;
+  o3.type='sine';     o3.frequency.value=freq*0.5;
+  const g1=audioCtx.createGain(); g1.gain.value=0.5;
+  const g2=audioCtx.createGain(); g2.gain.value=0.13;
+  const g3=audioCtx.createGain(); g3.gain.value=0.22;
+  const mg=audioCtx.createGain();
+  mg.gain.setValueAtTime(0,audioCtx.currentTime);
+  mg.gain.linearRampToValueAtTime(0.7,audioCtx.currentTime+0.07);
+  const flt=audioCtx.createBiquadFilter();
+  flt.type='lowpass'; flt.frequency.value=2400; flt.Q.value=0.7;
+  o1.connect(g1); o2.connect(g2); o3.connect(g3);
+  g1.connect(flt); g2.connect(flt); g3.connect(flt);
+  flt.connect(mg); mg.connect(masterGain);
+  o1.start(); o2.start(); o3.start();
+  activeAudio[midi]={oscs:[o1,o2,o3],gain:mg};
+  litKey(midi,true);
+}
+function noteOff(midi){
+  const n=activeAudio[midi]; if(!n) return;
+  const t=audioCtx?audioCtx.currentTime:0;
+  n.gain.gain.linearRampToValueAtTime(0,t+0.22);
+  setTimeout(()=>{n.oscs.forEach(o=>{try{o.stop()}catch(e){}})},280);
+  delete activeAudio[midi];
+  litKey(midi,false);
+}
+function stopAllAudio(){
+  Object.keys(activeAudio).forEach(m=>noteOff(parseInt(m)));
 }
 
-function noteOff(midi) {
-  const node = activeNodes[midi];
-  if (!node) return;
-  const t = audioCtx ? audioCtx.currentTime : 0;
-  node.gain.gain.linearRampToValueAtTime(0, t + 0.25);
-  setTimeout(() => { node.oscs.forEach(o => { try{o.stop();}catch(e){} }); }, 300);
-  delete activeNodes[midi];
-  const keyEl = document.getElementById('pkey-'+midi);
-  if (keyEl) keyEl.classList.remove('pressed','lit-up');
-}
+// ════════════════════════════════════════════════════
+//  KEYBOARD UI — Rajaraman style
+// ════════════════════════════════════════════════════
+const WW=48; // white key width px
 
-// ══════════════════════════════════════════════════
-//  KEYBOARD UI BUILD
-// ══════════════════════════════════════════════════
-function buildKeyboard() {
-  const wrap = document.getElementById('keyboard-wrap');
-  wrap.innerHTML = '';
-  let whiteCount = 0;
-  const W = 48, BW = 30;
+function buildKeyboard(){
+  const wrap=document.getElementById('kb-wrap');
+  const numRow=document.getElementById('kb-num-row');
+  const westRow=document.getElementById('kb-west-row');
+  wrap.innerHTML=''; numRow.innerHTML=''; westRow.innerHTML='';
 
-  // First pass: count whites
-  KEYBOARD_LAYOUT.forEach(k => { if (k.white) whiteCount++; });
-  wrap.style.width = (whiteCount * W + 4) + 'px';
+  const totalW=WKEYS.length*WW;
+  wrap.style.width=totalW+'px';
+  numRow.style.width=totalW+'px';
+  westRow.style.width=totalW+'px';
 
-  let wIdx = 0;
-  KEYBOARD_LAYOUT.forEach((k) => {
-    const el = document.createElement('div');
-    el.className = 'piano-key ' + (k.white ? 'white-key' : 'black-key');
-    el.id = 'pkey-' + k.midi;
-    el.dataset.midi = k.midi;
-    el.innerHTML = `<span class="k-sargam">${k.sargam}</span><span class="k-key">${k.key.toUpperCase()}</span>`;
-
-    if (k.white) {
-      el.style.left = (wIdx * W) + 'px';
-      wIdx++;
-    } else {
-      el.style.left = (wIdx * W - BW/2 - 2) + 'px';
-    }
-
-    el.addEventListener('mousedown', (e) => { e.preventDefault(); noteOn(k.midi); });
-    el.addEventListener('mouseup',   () => noteOff(k.midi));
-    el.addEventListener('mouseleave',() => { if(activeNodes[k.midi]) noteOff(k.midi); });
-    el.addEventListener('touchstart', (e) => { e.preventDefault(); noteOn(k.midi); }, {passive:false});
-    el.addEventListener('touchend',   (e) => { e.preventDefault(); noteOff(k.midi); }, {passive:false});
+  // White keys
+  WKEYS.forEach((k,i)=>{
+    const el=document.createElement('div');
+    el.className='wkey'; el.id='pkey-'+k.midi;
+    el.dataset.midi=k.midi;
+    el.style.left=(i*WW)+'px'; el.style.width=WW+'px';
+    el.innerHTML=`<span class="wl">${k.sargam}</span><span class="wk">${k.key.toUpperCase()}</span>`;
+    el.addEventListener('mousedown', e=>{e.preventDefault();noteOn(k.midi);});
+    el.addEventListener('mouseup', ()=>noteOff(k.midi));
+    el.addEventListener('mouseleave',()=>{if(activeAudio[k.midi])noteOff(k.midi);});
+    el.addEventListener('touchstart',e=>{e.preventDefault();noteOn(k.midi);},{passive:false});
+    el.addEventListener('touchend',  e=>{e.preventDefault();noteOff(k.midi);},{passive:false});
     wrap.appendChild(el);
+
+    // Western label cell
+    const wc=document.createElement('div');
+    wc.className='kb-west-cell';
+    wc.style.width=WW+'px'; wc.textContent=k.west;
+    westRow.appendChild(wc);
+
+    // Num row placeholder for white key position
+    const nc=document.createElement('div');
+    nc.className='kb-num-cell'; nc.style.width=WW+'px';
+    numRow.appendChild(nc);
   });
+
+  // Black keys
+  BKEYS.forEach(k=>{
+    const afterIdx=WKEYS.findIndex(w=>w.key===k.after);
+    if(afterIdx<0) return;
+    const el=document.createElement('div');
+    el.className='bkey'; el.id='pkey-'+k.midi;
+    el.dataset.midi=k.midi;
+    const leftPx=(afterIdx*WW)+WW-14;
+    el.style.left=leftPx+'px'; el.style.width='28px';
+    el.innerHTML=`<span class="wl">${k.sargam}</span><span class="wk">${k.key.toUpperCase()}</span>`;
+    el.addEventListener('mousedown',e=>{e.preventDefault();noteOn(k.midi);});
+    el.addEventListener('mouseup',  ()=>noteOff(k.midi));
+    el.addEventListener('mouseleave',()=>{if(activeAudio[k.midi])noteOff(k.midi);});
+    el.addEventListener('touchstart',e=>{e.preventDefault();noteOn(k.midi);},{passive:false});
+    el.addEventListener('touchend',  e=>{e.preventDefault();noteOff(k.midi);},{passive:false});
+    wrap.appendChild(el);
+
+    // Number row label for black key
+    const numCell=numRow.children[afterIdx];
+    if(numCell){
+      numCell.textContent=k.key.toUpperCase();
+      numCell.style.color='#aaa';
+      numCell.style.fontFamily="'Rajdhani',sans-serif";
+    }
+  });
+
+  // Total kb-outer width
+  document.querySelector('.kb-outer').style.width=(totalW+32)+'px';
 }
 
-// ══════════════════════════════════════════════════
-//  LANES — one per note used in selected song
-// ══════════════════════════════════════════════════
-let laneNotes = []; // [{sargam, midi}]
-let laneMap = {};   // midi → lane index
+function litKey(midi,on){
+  const el=document.getElementById('pkey-'+midi);
+  if(!el) return;
+  if(on) el.classList.add('pressed');
+  else   el.classList.remove('pressed','lit');
+}
+function hintKey(midi,on){
+  const el=document.getElementById('pkey-'+midi);
+  if(!el) return;
+  if(on) el.classList.add('lit');
+  else   el.classList.remove('lit');
+}
 
-function buildLanes(notes) {
-  // Get all unique notes in order of pitch
-  const usedMidis = [...new Set(notes.map(n => SARGAM_MIDI[n.n]).filter(Boolean))];
-  usedMidis.sort((a,b) => a-b);
-  laneNotes = usedMidis.map(m => {
-    const k = KEYBOARD_LAYOUT.find(k => k.midi === m);
-    const sargam = Object.entries(SARGAM_MIDI).find(([s,v])=>v===m)?.[0] || '?';
-    return { sargam, midi: m };
-  });
-  laneMap = {};
-  laneNotes.forEach((ln, i) => { laneMap[ln.midi] = i; });
+// ════════════════════════════════════════════════════
+//  LANES (one per note used in song)
+// ════════════════════════════════════════════════════
+let laneMap={};  // midi → lane index
+let laneNotes=[];// [{sargam,midi}]
 
-  const container = document.getElementById('lanes-container');
-  container.innerHTML = '';
-  laneNotes.forEach((ln, i) => {
-    const lane = document.createElement('div');
-    lane.className = 'lane';
-    lane.id = 'lane-' + i;
+function buildLanes(notes){
+  const midis=[...new Set(notes.map(n=>SARGAM_MIDI[n.n]).filter(Boolean))];
+  midis.sort((a,b)=>a-b);
+  laneNotes=midis.map(m=>({midi:m, sargam:MIDI_SARGAM[m]||'?'}));
+  laneMap={};
+  laneNotes.forEach((l,i)=>laneMap[l.midi]=i);
 
-    const header = document.createElement('div');
-    header.className = 'lane-header';
-    header.textContent = ln.sargam;
-    header.style.color = (SARGAM_COLOR[ln.sargam] || '#fff') + '55';
-    lane.appendChild(header);
-
-    const flash = document.createElement('div');
-    flash.className = 'lane-flash';
-    flash.id = 'flash-' + i;
-    flash.style.background = `radial-gradient(ellipse at center bottom, ${SARGAM_COLOR[ln.sargam] || '#fff'}22, transparent 70%)`;
+  const cont=document.getElementById('lanes');
+  cont.innerHTML='';
+  laneNotes.forEach((l,i)=>{
+    const lane=document.createElement('div');
+    lane.className='lane'; lane.id='lane-'+i;
+    // top label
+    const top=document.createElement('div');
+    top.className='lane-top';
+    const col=NOTE_COLOR[l.sargam]||'#fff';
+    top.style.color=col+'44';
+    top.textContent=l.sargam;
+    lane.appendChild(top);
+    // flash
+    const flash=document.createElement('div');
+    flash.className='lflash'; flash.id='lflash-'+i;
+    flash.style.background=`radial-gradient(ellipse at center bottom,${col}28,transparent 70%)`;
     lane.appendChild(flash);
-
-    container.appendChild(lane);
+    cont.appendChild(lane);
   });
 }
 
-// ══════════════════════════════════════════════════
-//  GAME ENGINE — falling notes
-// ══════════════════════════════════════════════════
-let gameRunning = false;
-let currentSongNotes = [];
-let noteIndex = 0;
-let activeNote = null;     // {sargam, midi, el, laneIdx, startTime, duration, hit}
-let scheduledEl = null;
-let gameRAF = null;
-let score = 0, hits = 0, misses = 0, combo = 0;
-let gameStartTime = 0;
-let noteTimes = [];        // [{midi, absStart, duration, index}] — precomputed
-let spawnedIndex = 0;
-let fallingNotes = [];     // DOM elements currently falling
+// ════════════════════════════════════════════════════
+//  CLAUDE AI SONG SEARCH
+// ════════════════════════════════════════════════════
+async function searchSong(){
+  const songName=document.getElementById('song-input').value.trim();
+  if(!songName){setStatus('❌ Song ka naam likhao!','#ff4444');return;}
 
-const NOTE_HEIGHT = 36;
-const NOTE_SPAWN_AHEAD = 2200; // ms ahead to spawn
-const HIT_ZONE_BOTTOM = 80;    // px from bottom (CSS var)
-const HIT_WINDOW = 260;        // ms tolerance
+  const apiKey=document.getElementById('api-key').value.trim();
 
-function precomputeTimes(notes, speed) {
-  let t = 500; // initial delay ms
-  return notes.map((n, i) => {
-    const obj = { midi: SARGAM_MIDI[n.n], sargam: n.n, absStart: t, duration: n.d / speed, index: i };
-    t += (n.d / speed) + 120;
+  // Try built-in first (fuzzy match)
+  const builtin=tryBuiltin(songName);
+  if(builtin){
+    loadSong(songName, builtin);
+    return;
+  }
+
+  if(!apiKey){
+    setStatus(`❌ "${songName}" built-in mein nahi. Claude API key daalo ya inme se choose karo: `+Object.keys(BUILTIN).join(' | '),'#ff9900');
+    return;
+  }
+
+  // Claude API call
+  const btn=document.getElementById('btn-search');
+  btn.disabled=true;
+  setStatus('🤖 Claude se notes fetch ho rahe hain...','#ffd700');
+
+  try{
+    const prompt=`You are a harmonium music teacher. Give me the sargam note sequence for the main melody/mukhda of the song "${songName}".
+
+Return ONLY a JSON array, nothing else, no markdown, no explanation:
+[{"n":"Sa","d":600},{"n":"Re","d":400},...]
+
+Rules:
+- Use ONLY these note names: Sa, re, Re, ga, Ga, Ma, ma, Pa, dha, Dha, ni, Ni, Sa', re', Re', ga', Ga', Ma', ma', Pa'
+- "d" = duration in milliseconds (300 to 1200)
+- Give 16 to 32 notes for the most recognizable part of the song
+- For Bollywood songs give the mukhda/antaraa hook
+- Be accurate to the actual melody`;
+
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:800,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data=await res.json();
+    if(data.error) throw new Error(data.error.message);
+    const txt=data.content[0].text.trim();
+    const match=txt.match(/\[[\s\S]*?\]/);
+    if(!match) throw new Error('Notes JSON nahi mila');
+    const notes=JSON.parse(match[0]);
+    if(!Array.isArray(notes)||notes.length===0) throw new Error('Empty notes');
+    loadSong(songName, notes);
+  }catch(e){
+    setStatus('❌ Error: '+e.message,'#ff4444');
+  }
+  btn.disabled=false;
+}
+
+function tryBuiltin(name){
+  const n=name.toLowerCase();
+  for(const [k,v] of Object.entries(BUILTIN)){
+    if(k.toLowerCase().includes(n)||n.includes(k.toLowerCase().split(' ')[0])) return v;
+  }
+  return null;
+}
+
+function loadSong(name, notes){
+  stopGame(false);
+  buildLanes(notes);
+  currentNotes=notes;
+  precomputeNotes();
+  document.getElementById('btn-play').disabled=false;
+  setStatus(`✅ "${name}" ready (${notes.length} notes) — ▶ Play dabao!`,'#39ff14');
+}
+
+// ════════════════════════════════════════════════════
+//  GAME ENGINE
+// ════════════════════════════════════════════════════
+let gameRunning=false;
+let currentNotes=[];
+let noteSched=[];    // [{midi,sargam,absStart,duration,index}]
+let fallingNotes=[]; // active DOM note objects
+let spawnIdx=0;
+let gameRAF=null;
+let gameT0=0;
+let score=0,hits=0,misses=0,combo=0;
+
+const NOTE_H=40;
+const HIT_ZONE_PX=82; // matches CSS --hit-h
+const HIT_WIN=280;    // ms tolerance
+
+function precomputeNotes(){
+  const spd=parseFloat(document.getElementById('spd').value);
+  let t=600;
+  noteSched=currentNotes.map((n,i)=>{
+    const dur=(n.d||600)/spd;
+    const obj={midi:SARGAM_MIDI[n.n],sargam:n.n,absStart:t,duration:dur,index:i};
+    t+=dur+100;
     return obj;
   });
 }
 
-function startGame() {
+function travelTime(){
+  const spd=parseFloat(document.getElementById('spd').value);
+  return 2200/spd;
+}
+
+function startGame(){
   initAudio();
   stopGame(false);
-  resetScore();
-
-  const songName = document.getElementById('song-select').value;
-  const raw = SONGS[songName];
-  if (!raw) return;
-  currentSongNotes = raw;
-
-  const speed = parseFloat(document.getElementById('speed-slider').value);
-  buildLanes(raw);
-
-  noteTimes = precomputeTimes(raw, speed);
-  spawnedIndex = 0;
-  fallingNotes = [];
-  gameRunning = true;
-  gameStartTime = performance.now();
-
-  document.getElementById('btn-play').disabled = true;
-  document.getElementById('btn-stop').disabled = false;
-  setStatus(`🎵 ${songName} — keyboard dabao!`);
-
+  score=hits=misses=combo=0; updateUI();
+  precomputeNotes();
+  spawnIdx=0; fallingNotes=[];
+  gameRunning=true;
+  gameT0=performance.now();
+  document.getElementById('btn-play').disabled=true;
+  document.getElementById('btn-stop').disabled=false;
+  // Reset lane flashes
+  document.querySelectorAll('.lflash').forEach(f=>f.style.opacity='0');
   gameLoop();
 }
 
-function gameLoop() {
-  if (!gameRunning) return;
-  const now = performance.now() - gameStartTime;
-  const gameAreaH = document.getElementById('game-area').clientHeight;
+function gameLoop(){
+  if(!gameRunning) return;
+  const now=performance.now()-gameT0;
+  const gh=document.getElementById('lanes').clientHeight;
+  const trav=travelTime();
 
-  // Spawn notes that should be visible
-  while (spawnedIndex < noteTimes.length) {
-    const nt = noteTimes[spawnedIndex];
-    const arriveTime = nt.absStart;
-    const travelTime = getTravelTime();
-    const spawnTime = arriveTime - travelTime;
-    if (now >= spawnTime) {
-      spawnNote(nt, gameAreaH, now);
-      spawnedIndex++;
-    } else break;
+  // Spawn notes
+  while(spawnIdx<noteSched.length){
+    const nt=noteSched[spawnIdx];
+    if(now>=nt.absStart-trav){spawnNote(nt,gh,now);spawnIdx++;}
+    else break;
   }
 
-  // Animate falling notes
-  const toRemove = [];
-  fallingNotes.forEach(fn => {
-    const elapsed = now - fn.spawnTime;
-    const travelTime = getTravelTime();
-    const progress = elapsed / travelTime; // 0 → 1 when at hit zone
-    // Bottom of travel = HIT_ZONE_BOTTOM px from bottom of gameArea
-    const startY = -NOTE_HEIGHT;
-    const endY = gameAreaH - HIT_ZONE_BOTTOM - NOTE_HEIGHT/2;
-    const y = startY + progress * (endY - startY);
-    fn.el.style.top = y + 'px';
-
-    // Missed?
-    if (!fn.hit && now > fn.nt.absStart + HIT_WINDOW) {
-      fn.el.style.opacity = '0.3';
+  // Animate + check missed
+  const dead=[];
+  fallingNotes.forEach(fn=>{
+    const progress=(now-fn.spawnTime)/trav;
+    const startY=-NOTE_H;
+    const endY=gh-HIT_ZONE_PX-NOTE_H/2;
+    const y=startY+progress*(endY-startY);
+    fn.el.style.top=y+'px';
+    if(!fn.hit && now>fn.nt.absStart+HIT_WIN){
+      fn.el.style.opacity='0.25';
+      hintKey(fn.nt.midi,false);
     }
-    if (y > gameAreaH + 20) {
-      if (!fn.hit) {
-        misses++; combo = 0;
-        showMiss(fn.laneIdx, gameAreaH);
-        updateScoreUI();
-      }
-      fn.el.remove();
-      toRemove.push(fn);
+    if(y>gh+30){
+      if(!fn.hit){misses++;combo=0;updateUI();showMiss(fn.laneIdx,gh);}
+      fn.el.remove(); dead.push(fn);
     }
   });
-  fallingNotes = fallingNotes.filter(f => !toRemove.includes(f));
+  fallingNotes=fallingNotes.filter(f=>!dead.includes(f));
 
-  // End check
-  if (spawnedIndex >= noteTimes.length && fallingNotes.length === 0) {
-    endGame(); return;
+  // Hint key for upcoming note
+  if(fallingNotes.length>0){
+    const upcoming=fallingNotes.filter(f=>!f.hit).sort((a,b)=>a.nt.absStart-b.nt.absStart);
+    if(upcoming.length>0){
+      hintKey(upcoming[0].nt.midi,true);
+      if(upcoming[1]) hintKey(upcoming[1].nt.midi,false);
+    }
   }
 
-  gameRAF = requestAnimationFrame(gameLoop);
+  if(spawnIdx>=noteSched.length&&fallingNotes.length===0){endGame();return;}
+  gameRAF=requestAnimationFrame(gameLoop);
 }
 
-function getTravelTime() {
-  const speed = parseFloat(document.getElementById('speed-slider').value);
-  return 2000 / speed;
-}
+function spawnNote(nt,gh,nowMs){
+  if(!(nt.midi in laneMap)) return;
+  const li=laneMap[nt.midi];
+  const lane=document.getElementById('lane-'+li);
+  if(!lane) return;
 
-function spawnNote(nt, gameAreaH, nowMs) {
-  if (!(nt.midi in laneMap)) return;
-  const laneIdx = laneMap[nt.midi];
-  const lane = document.getElementById('lane-' + laneIdx);
-  if (!lane) return;
+  const el=document.createElement('div');
+  el.className='fnote';
+  const col=NOTE_COLOR[nt.sargam]||'#fff';
+  el.style.background=col;
+  el.style.height=NOTE_H+'px';
+  el.style.top=(-NOTE_H)+'px';
+  el.style.boxShadow=`0 0 16px ${col}`;
 
-  const el = document.createElement('div');
-  el.className = 'falling-note';
-  el.textContent = nt.sargam;
-  const col = SARGAM_COLOR[nt.sargam] || '#fff';
-  el.style.background = col;
-  el.style.height = NOTE_HEIGHT + 'px';
-  el.style.color = '#000';
-  el.style.boxShadow = `0 0 18px ${col}, 0 0 6px ${col}`;
-  el.style.top = (-NOTE_HEIGHT) + 'px';
+  // Key hint
+  const kchar=MIDI_KEY[nt.midi]||'?';
+  el.innerHTML=`<span class="fn-sargam">${nt.sargam}</span><span class="fn-key">[${kchar.toUpperCase()}]</span>`;
+
   lane.appendChild(el);
-
-  fallingNotes.push({ el, nt, laneIdx, spawnTime: nowMs - (nt.absStart - (nt.absStart - getTravelTime() > 0 ? nt.absStart - getTravelTime() : 0)), hit: false });
-  // Corrected spawnTime:
-  const last = fallingNotes[fallingNotes.length-1];
-  last.spawnTime = nowMs;
+  fallingNotes.push({el,nt,laneIdx:li,spawnTime:nowMs,hit:false});
 }
 
-function checkHit(pressedMidi) {
-  if (!gameRunning) return false;
-  const now = performance.now() - gameStartTime;
-  // Find the closest unHit note for this midi within window
-  let best = null, bestDiff = Infinity;
-  fallingNotes.forEach(fn => {
-    if (fn.hit) return;
-    if (fn.nt.midi !== pressedMidi) return;
-    const diff = Math.abs(now - fn.nt.absStart);
-    if (diff < HIT_WINDOW && diff < bestDiff) { best = fn; bestDiff = diff; }
+function checkHit(midi){
+  if(!gameRunning) return;
+  const now=performance.now()-gameT0;
+  let best=null, bd=Infinity;
+  fallingNotes.forEach(fn=>{
+    if(fn.hit||fn.nt.midi!==midi) return;
+    const d=Math.abs(now-fn.nt.absStart);
+    if(d<HIT_WIN&&d<bd){best=fn;bd=d;}
   });
-  if (best) {
-    best.hit = true;
-    hits++; combo++;
-    score += 10 + combo * 2;
-    updateScoreUI();
-    flashLane(best.laneIdx);
-    showCombo(combo);
-    // Make note flash green
-    best.el.style.background = '#39ff14';
-    best.el.style.boxShadow = '0 0 30px #39ff14';
-    setTimeout(() => { best.el.style.opacity = '0'; }, 150);
-    return true;
+  if(best){
+    best.hit=true;
+    hits++;combo++;score+=10+combo*2;updateUI();
+    flashLane(best.laneIdx);showCombo(combo);
+    best.el.style.background='#39ff14';
+    best.el.style.boxShadow='0 0 30px #39ff14';
+    setTimeout(()=>best.el.style.opacity='0',130);
+    hintKey(midi,false);
   }
-  return false;
 }
 
-function flashLane(idx) {
-  const f = document.getElementById('flash-' + idx);
-  if (!f) return;
-  f.style.opacity = '1';
-  setTimeout(() => { f.style.opacity = '0'; }, 180);
+function flashLane(i){
+  const f=document.getElementById('lflash-'+i);
+  if(!f)return;
+  f.style.opacity='1';
+  setTimeout(()=>f.style.opacity='0',180);
 }
-
-function showCombo(c) {
-  if (c < 3) return;
-  const el = document.getElementById('combo-display');
-  el.textContent = c + 'x 🔥';
-  el.style.opacity = '1';
-  clearTimeout(el._t);
-  el._t = setTimeout(() => { el.style.opacity = '0'; }, 700);
+function showCombo(c){
+  if(c<3)return;
+  const el=document.getElementById('combo-disp');
+  el.textContent=c+'x 🔥';el.style.opacity='1';
+  clearTimeout(el._t);el._t=setTimeout(()=>el.style.opacity='0',700);
 }
-
-function showMiss(laneIdx, gameAreaH) {
-  const lane = document.getElementById('lane-' + laneIdx);
-  if (!lane) return;
-  const pop = document.createElement('div');
-  pop.className = 'miss-pop';
-  pop.textContent = 'MISS';
-  pop.style.bottom = (HIT_ZONE_BOTTOM + 10) + 'px';
-  pop.style.left = '50%';
-  pop.style.transform = 'translateX(-50%)';
-  lane.appendChild(pop);
-  setTimeout(() => pop.remove(), 700);
+function showMiss(li,gh){
+  const lane=document.getElementById('lane-'+li);
+  if(!lane)return;
+  const p=document.createElement('div');
+  p.className='miss-pop';p.textContent='MISS';
+  lane.appendChild(p);
+  setTimeout(()=>p.remove(),700);
 }
-
-function stopGame(updateUI = true) {
-  gameRunning = false;
+function stopGame(ui=true){
+  gameRunning=false;
   cancelAnimationFrame(gameRAF);
-  // Remove all falling notes
-  document.querySelectorAll('.falling-note').forEach(e => e.remove());
-  fallingNotes = [];
-  // Stop all sounds
-  Object.keys(activeNodes).forEach(m => noteOff(parseInt(m)));
-  if (updateUI) {
-    document.getElementById('btn-play').disabled = false;
-    document.getElementById('btn-stop').disabled = true;
-    setStatus('Ruk gaya. Dobara PLAY dabaao.');
+  document.querySelectorAll('.fnote').forEach(e=>e.remove());
+  fallingNotes=[];
+  stopAllAudio();
+  document.querySelectorAll('.wkey.lit,.bkey.lit').forEach(e=>e.classList.remove('lit'));
+  if(ui){
+    document.getElementById('btn-play').disabled=false;
+    document.getElementById('btn-stop').disabled=true;
+    setStatus('Ruk gaya. Phir se ▶ Play dabao.','#aaa');
   }
 }
-
-function endGame() {
-  gameRunning = false;
-  const acc = (hits + misses) > 0 ? Math.round(hits/(hits+misses)*100) : 0;
-  document.getElementById('btn-play').disabled = false;
-  document.getElementById('btn-stop').disabled = true;
-  setStatus(`🎉 Song khatam! Score: ${score} | Accuracy: ${acc}% | Max Combo: ${combo} 🔥`);
+function endGame(){
+  gameRunning=false;
+  const acc=(hits+misses)>0?Math.round(hits/(hits+misses)*100):0;
+  document.getElementById('btn-play').disabled=false;
+  document.getElementById('btn-stop').disabled=true;
+  setStatus(`🎉 Song khatam! Score: ${score} | Accuracy: ${acc}% | Best Combo: ${combo} 🔥`,'#ffd700');
 }
-
-function freePlay() {
+function freePlay(){
   stopGame();
-  // Rebuild lanes for selected song for keyboard feel
-  const songName = document.getElementById('song-select').value;
-  const raw = SONGS[songName];
-  if (raw) buildLanes(raw);
-  setStatus('🎹 Free Play — keyboard bajao maazaa karo!');
+  setStatus('🎹 Free Play — keyboard bajao (keyboard keys: ` Q W E R T Y U I O P [ ] \\)','#a29bfe');
+}
+function updateUI(){
+  document.getElementById('v-score').textContent=score;
+  document.getElementById('v-hits').textContent=hits;
+  document.getElementById('v-miss').textContent=misses;
+  document.getElementById('v-combo').textContent=combo;
+}
+function setStatus(msg,col='#ffd700'){
+  const s=document.getElementById('status');
+  s.textContent=msg; s.style.color=col;
 }
 
-function resetScore() {
-  score = hits = misses = combo = 0;
-  updateScoreUI();
-}
-
-function updateScoreUI() {
-  document.getElementById('sv-score').textContent = score;
-  document.getElementById('sv-hits').textContent = hits;
-  document.getElementById('sv-miss').textContent = misses;
-  document.getElementById('sv-combo').textContent = combo;
-}
-
-function setStatus(msg) {
-  document.getElementById('status-bar').textContent = msg;
-}
-
-// ══════════════════════════════════════════════════
+// ════════════════════════════════════════════════════
 //  KEYBOARD EVENTS
-// ══════════════════════════════════════════════════
-const heldKeys = new Set();
-
-document.addEventListener('keydown', e => {
-  if (e.repeat) return;
-  const key = e.key.toLowerCase();
-  if (KEY_TO_MIDI[key] === undefined) return;
-  const midi = KEY_TO_MIDI[key];
-  heldKeys.add(key);
+// ════════════════════════════════════════════════════
+const held=new Set();
+document.addEventListener('keydown',e=>{
+  if(e.repeat) return;
+  const k=e.key==='`'?'`':e.key.toLowerCase();
+  const midi=KEY_MIDI[k]||KEY_MIDI[e.key];
+  if(midi===undefined) return;
+  e.preventDefault();
+  held.add(k);
   noteOn(midi);
-  if (!checkHit(midi)) {
-    // Wrong note or missed timing — visual only, no penalty
-  }
+  checkHit(midi);
+});
+document.addEventListener('keyup',e=>{
+  const k=e.key==='`'?'`':e.key.toLowerCase();
+  held.delete(k);
+  const midi=KEY_MIDI[k]||KEY_MIDI[e.key];
+  if(midi!==undefined) noteOff(midi);
 });
 
-document.addEventListener('keyup', e => {
-  const key = e.key.toLowerCase();
-  if (KEY_TO_MIDI[key] === undefined) return;
-  heldKeys.delete(key);
-  noteOff(KEY_TO_MIDI[key]);
-});
-
-// ══════════════════════════════════════════════════
-//  SONG SELECT POPULATE
-// ══════════════════════════════════════════════════
-function populateSongs() {
-  const sel = document.getElementById('song-select');
-  Object.keys(SONGS).forEach(name => {
-    const opt = document.createElement('option');
-    opt.value = name; opt.textContent = name;
-    sel.appendChild(opt);
-  });
-}
-
-function onSongChange() {
-  stopGame();
-  const songName = document.getElementById('song-select').value;
-  const raw = SONGS[songName];
-  if (raw) buildLanes(raw);
-  setStatus(`"${songName}" ready — PLAY dabaao!`);
-}
-
-function onSpeedChange() {
-  const v = document.getElementById('speed-slider').value;
-  document.getElementById('speed-lbl').textContent = v + 'x';
-}
-
-// ══════════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded', () => {
-  populateSongs();
+// Allow Enter in search box
+document.addEventListener('DOMContentLoaded',()=>{
   buildKeyboard();
-  onSongChange(); // build lanes for first song
+  // Load default song
+  loadSong('Sa Re Ga Ma (Practice)', BUILTIN['Sa Re Ga Ma (Practice)']);
+  setStatus('Song search karo ya built-in: Tum Hi Ho | Kal Ho Na Ho | Arz Kiya Hai | Sa Re Ga Ma','#aaa');
+
+  document.getElementById('song-input').addEventListener('keydown',e=>{
+    if(e.key==='Enter') searchSong();
+  });
 });
 </script>
 </body>
